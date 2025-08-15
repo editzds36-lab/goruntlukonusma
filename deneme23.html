@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kamera & Mikrofon İzni</title>
+<style>
+  body { font-family: sans-serif; padding: 16px; background:#f0f0f0; }
+  video { width: 100%; max-height: 50vh; background:#000; border-radius:12px; margin-bottom:10px; }
+  button { padding:10px 16px; margin:4px; border-radius:999px; border:0; background:#007bff; color:white; }
+  button.off { background:#dc3545; }
+</style>
+</head>
+<body>
+<h2>📹 Kamera ve Mikrofon İzni</h2>
+<video id="cam" autoplay playsinline muted></video><br>
+<button id="start">Kamerayı Aç</button>
+<button id="toggleVideo" disabled>📷 Kamera Kapat</button>
+<button id="toggleAudio" disabled>🎤 Mikrofon Kapat</button>
+
+<script>
+let stream = null;
+const videoEl = document.getElementById('cam');
+const startBtn = document.getElementById('start');
+const toggleVideoBtn = document.getElementById('toggleVideo');
+const toggleAudioBtn = document.getElementById('toggleAudio');
+
+startBtn.onclick = async () => {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+        videoEl.srcObject = stream;
+        toggleVideoBtn.disabled = false;
+        toggleAudioBtn.disabled = false;
+        startBtn.disabled = true;
+    } catch(e) {
+        alert('Kamera/Mikrofon izni verilmedi veya hata: ' + e);
+    }
+};
+
+toggleVideoBtn.onclick = () => {
+    if(!stream) return;
+    const videoTrack = stream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    toggleVideoBtn.textContent = videoTrack.enabled ? "📷 Kamera Kapat" : "📷 Kamera Aç";
+};
+
+toggleAudioBtn.onclick = () => {
+    if(!stream) return;
+    const audioTrack = stream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    toggleAudioBtn.textContent = audioTrack.enabled ? "🎤 Mikrofon Kapat" : "🎤 Mikrofon Aç";
+};
+</script>
+</body>
+</html>
